@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
 
 from __future__ import print_function
 import requests
@@ -37,29 +37,27 @@ class TDictionary:
     def query_and_parse(self, keyword):
         raise NotImplementedError("To be implemented by subclasses.")
 
-    def simple_print(self, word=None):
-        if not word:
-            word = self.last_search_word
-        if not word:
+    def simple_print(self):
+        if not self.last_search_word:
             print('Nothing found.')
             return
 
         print('Word:')
-        print('\t' + word.name)
+        print('\t' + self.last_search_word.name)
 
         print('Pronunciations:')
-        for pronunciation in word.pronunciations:
+        for pronunciation in self.last_search_word.pronunciations:
             print('\t' + pronunciation)
 
         print('Simple Meanings:')
-        for simple_meaning in word.simple_meanings:
+        for simple_meaning in self.last_search_word.simple_meanings:
             print('\t' + simple_meaning.word_type, end='\t')
             for meaning in simple_meaning.meanings:
                 print(meaning, end='')
             print()
 
         print('Tenses:')
-        for tense in word.tenses:
+        for tense in self.last_search_word.tenses:
             print('\t' + tense.name, end='\t')
             print(tense.value)
 
@@ -67,7 +65,7 @@ class TDictionary:
 class ICIBA(TDictionary):
     def __init__(self):
         TDictionary.__init__(self)
-        self.base_url = 'https://www.iciba.com/'
+        self.base_url = 'http://www.iciba.com/'
 
     def query_and_parse(self, keyword):
         html = self.get_raw_html(keyword)
@@ -109,6 +107,12 @@ class ICIBA(TDictionary):
         if r.status_code != 200:
             return None
         return r.text
+
+    def simple_print(self):
+        TDictionary.simple_print(self)
+        if self.last_search_word:
+            print()
+            print('For more, please check on: ' + self.base_url + self.last_search_word.name, '')
 
 
 if __name__ == '__main__':

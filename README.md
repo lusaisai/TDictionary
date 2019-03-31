@@ -1,5 +1,6 @@
 # TDictionary
 TDictionary is a simple command line tool to look up an English word and find its Chinese meanings.
+
 TDictionary是一个简单的命令行英汉词典。
 
 The dictionaries are web based, including the following so far,

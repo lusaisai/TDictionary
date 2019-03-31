@@ -147,11 +147,12 @@ class ICIBA(TDictionary):
 
     @staticmethod
     def parse_collins(soup, word):
-        collins_sections = soup.select('div.collins-section > div.no-order > div.prep-order')
+        collins_sections = soup.select('div.article > div.collins-section > div.no-order > div.prep-order')
+        collins_sections.extend(soup.select('div.article > div.collins-section > div.section-prep > div.prep-order'))
         for collins_section in collins_sections:
             para = collins_section.select_one('p.size-chinese')
-            if not para:
-                break
+            if not para or not para.select_one('span'):
+                continue
             word_type = para.select_one('span.family-english').text.strip()
             chinese_desc = para.select_one('span.family-chinese').text.strip()
             english_desc = para.select_one('span.prep-en').text.strip()

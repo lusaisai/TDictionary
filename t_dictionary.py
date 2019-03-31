@@ -127,28 +127,28 @@ class ICIBA(TDictionary):
         if not keyword_tag:
             return None
 
-        word_name = keyword_tag.text.strip()
+        word_name = keyword_tag.get_text().strip()
         word = Word(word_name)
 
         # pronunciations
         pronunciation_tags = soup.select('div.base-speak > span > span')
         for pronunciation_tag in pronunciation_tags:
-            word.pronunciations.append(pronunciation_tag.text.strip())
+            word.pronunciations.append(pronunciation_tag.get_text().strip())
 
         # Simple Meanings
         simple_meaning_list_tags = soup.select('ul.base-list > li')
         for simple_meaning_list_tag in simple_meaning_list_tags:
-            word_type = simple_meaning_list_tag.select_one('span.prop').text.strip()
+            word_type = simple_meaning_list_tag.select_one('span.prop').get_text().strip()
             meanings = []
             for meaning_tag in simple_meaning_list_tag.select('p > span'):
-                meanings.append(meaning_tag.text.strip())
+                meanings.append(meaning_tag.get_text().strip())
             word.simple_meanings.append(SimpleMeanings(word_type, meanings))
 
         # Tenses
         tense_list_tags = soup.select('li.change > p > span')
         for tense_list_tag in tense_list_tags:
             tense_name = tense_list_tag.find(text=True, recursive=False).string.strip()
-            tense_value = tense_list_tag.select_one('a').text.strip()
+            tense_value = tense_list_tag.select_one('a').get_text().strip()
             word.tenses.append(Tense(tense_name, tense_value))
 
         self.parse_collins(soup, word)
@@ -163,17 +163,17 @@ class ICIBA(TDictionary):
             para = collins_section.select_one('p.size-chinese')
             if not para or not para.select_one('span'):
                 continue
-            word_type = para.select_one('span.family-english').text.strip()
-            chinese_desc = para.select_one('span.family-chinese').text.strip()
-            english_desc = para.select_one('span.prep-en').text.strip()
+            word_type = para.select_one('span.family-english').get_text().strip()
+            chinese_desc = para.select_one('span.family-chinese').get_text().strip()
+            english_desc = para.select_one('span.prep-en').get_text().strip()
             collins_meaning = CollinsMeaning(word_type, chinese_desc, english_desc)
 
             examples = collins_section.select('div.text-sentence')
             for example in examples:
-                english_sentence = example.select_one('p.family-english').text.strip()
-                chinese_sentence = example.select_one('p.family-chinese').text.strip()
+                english_sentence = example.select_one('p.family-english').get_text().strip()
+                chinese_sentence = example.select_one('p.family-chinese').get_text().strip()
                 try:
-                    highlight_word = example.select_one('p.family-english > span > b').text.strip()
+                    highlight_word = example.select_one('p.family-english > span > b').get_text().strip()
                 except AttributeError:
                     highlight_word = word.name
                 collins_meaning.examples.append(

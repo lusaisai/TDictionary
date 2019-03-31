@@ -4,6 +4,8 @@ from __future__ import print_function
 import requests
 from bs4 import BeautifulSoup
 import click
+import re
+import termcolor
 
 
 class SimpleMeanings:
@@ -94,7 +96,12 @@ class TDictionary:
             print(str(index+1) + '\t' + collins_meaning.word_type + '\t' + collins_meaning.chinese_description)
             print('\t' + collins_meaning.english_description)
             for example in collins_meaning.examples:
-                print('\t\t' + example.english_sentence)
+                colored_sentence = re.sub(r'\b{}\b'.format(example.highlight_word),
+                                          termcolor.colored(example.highlight_word,
+                                                            'magenta',
+                                                            attrs=['bold', 'underline']),
+                                          example.english_sentence)
+                print('\t\t' + colored_sentence)
                 print('\t\t' + example.chinese_sentence)
                 print()
 

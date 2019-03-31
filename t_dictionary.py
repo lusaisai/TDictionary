@@ -189,6 +189,7 @@ if __name__ == '__main__':
     @click.option('-a', '--all-collins-items', is_flag=True,
                   help='Show all the Collins dictionary items.')
     def cli(word, collins_count, all_collins_items):
+        """This command line tool looks up an English word and finds its Chinese meanings."""
         i = ICIBA()
         i.lookup(word)
         if all_collins_items:

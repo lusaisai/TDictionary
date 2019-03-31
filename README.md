@@ -10,7 +10,7 @@ The dictionaries are web based, including the following so far,
 ### Installation
 The script is written in Python in a compatible way, so both the latest Python 2 and Python 3 should work.
 
-Install the Python packages by running
+Download this repository, navigate to the directory and install the Python packages by running
 ```sh
 $ pip install -r requirements.txt
 ```

@@ -22,18 +22,18 @@ $ ./t_dictionary.py --help
 ```
 
 ## Examples
-The default behaviour is to print the simple meanings and two items from Collins to quickly understand the word.
+The default behaviour is to print the simple meanings and two items from Collins to quickly understand the word
 ```sh
 $ ./t_dictionary.py pretty
 ```
 
-To show all the items from Collins to quickly understand the word.
+To show all the items from Collins
 ```sh
 $ ./t_dictionary.py -a pretty
 $ ./t_dictionary.py --all-collins-items pretty
 ```
 
-To specify the number of items to show from Collins to quickly understand the word.
+To specify the number of items to show from Collins
 ```sh
 $ ./t_dictionary.py -c 10 there
 $ ./t_dictionary.py --collins-count 10 there

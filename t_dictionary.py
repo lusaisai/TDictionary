@@ -3,7 +3,7 @@
 from __future__ import print_function
 import requests
 from bs4 import BeautifulSoup
-import argparse
+import click
 
 
 class SimpleMeanings:
@@ -46,7 +46,7 @@ class TDictionary:
     def __init__(self):
         self.last_search_word = None
 
-    def translate(self, keyword):
+    def lookup(self, keyword):
         self.last_search_word = self.query_and_parse(keyword)
         return self.last_search_word
 
@@ -59,11 +59,14 @@ class TDictionary:
             if item:
                 return item
 
-    def simple_print(self):
+    def simple_print(self, collins_count):
         if not self.last_search_word:
             print('Nothing found.')
             return
 
+        print('=' * 88)
+        print('Simple Dictionary')
+        print('=' * 88)
         print('Word:')
         print('\t' + self.last_search_word.name)
 
@@ -82,6 +85,18 @@ class TDictionary:
         for tense in self.last_search_word.tenses:
             print('\t' + tense.name, end='\t')
             print(tense.value)
+
+        print()
+        print('=' * 88)
+        print('Collins Dictionary')
+        print('=' * 88)
+        for index, collins_meaning in enumerate(self.last_search_word.collins_meanings[:collins_count]):
+            print(str(index+1) + '\t' + collins_meaning.word_type + '\t' + collins_meaning.chinese_description)
+            print('\t' + collins_meaning.english_description)
+            for example in collins_meaning.examples:
+                print('\t\t' + example.english_sentence)
+                print('\t\t' + example.chinese_sentence)
+                print()
 
 
 class ICIBA(TDictionary):
@@ -161,16 +176,26 @@ class ICIBA(TDictionary):
             return None
         return r.text
 
-    def simple_print(self):
-        TDictionary.simple_print(self)
+    def simple_print(self, collins_count):
+        TDictionary.simple_print(self, collins_count)
         print('\nFor more, please check on: ' +
               self.base_url + (self.coalesce(self.last_search_word, Word(''))).name)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Chinese -> English translations')
-    parser.add_argument('word', help='The English word to be translated')
-    args = parser.parse_args()
-    i = ICIBA()
-    i.translate(args.word)
-    i.simple_print()
+    @click.command()
+    @click.argument('word')
+    @click.option('-c', '--collins-count', default=2, type=int, help='Number of Collins items to show.')
+    @click.option('-a/-n', '--all-collins-items/--not-all-collins-items', default=False,
+                  help='Set the flag to show all the Collins dictionary items')
+    def cli(word, collins_count, all_collins_items):
+        i = ICIBA()
+        i.lookup(word)
+        if all_collins_items:
+            count = 9999
+        else:
+            count = collins_count
+
+        i.simple_print(count)
+
+    cli()

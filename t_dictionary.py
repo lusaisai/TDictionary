@@ -92,15 +92,18 @@ class TDictionary:
         print('=' * 88)
         print('Collins Dictionary')
         print('=' * 88)
+        highlight_words = [tense.value for tense in self.last_search_word.tenses]
         for index, collins_meaning in enumerate(self.last_search_word.collins_meanings[:collins_count]):
             print(str(index+1) + '\t' + collins_meaning.word_type + '\t' + collins_meaning.chinese_description)
             print('\t' + collins_meaning.english_description)
             for example in collins_meaning.examples:
-                colored_sentence = re.sub(r'\b{}\b'.format(example.highlight_word),
-                                          termcolor.colored(example.highlight_word,
-                                                            'magenta',
-                                                            attrs=['bold', 'underline']),
-                                          example.english_sentence)
+                colored_sentence = example.english_sentence
+                for highlight_word in highlight_words + [example.highlight_word]:
+                    colored_sentence = re.sub(r'\b{}\b'.format(highlight_word),
+                                              termcolor.colored(highlight_word,
+                                                                'magenta',
+                                                                attrs=['bold', 'underline']),
+                                              colored_sentence)
                 print('\t\t' + colored_sentence)
                 print('\t\t' + example.chinese_sentence)
                 print()

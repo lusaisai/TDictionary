@@ -1,12 +1,13 @@
 # TDictionary
 TDictionary is a simple command line tool to look up an English word and find its Chinese meanings.
+TDictionary是一个简单的命令行英汉词典。
 
 The dictionaries are web based, including the following so far,
-  - A simple dictionary
-  - A Collins dictionary
+  - A Simple Dictionary（基础词典）
+  - A Collins Dictionary（柯林斯高阶英汉双解学习词典）
 
 ### Installation
-The script is written in Python in a compatiable way, so both the latest Python 2 and Python 3 should work.
+The script is written in Python in a compatible way, so both the latest Python 2 and Python 3 should work.
 
 Install the Python packages by running
 ```sh

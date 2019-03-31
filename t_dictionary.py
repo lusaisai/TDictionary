@@ -187,7 +187,7 @@ if __name__ == '__main__':
     @click.argument('word')
     @click.option('-c', '--collins-count', default=2, type=int, help='Number of Collins items to show.')
     @click.option('-a', '--all-collins-items', is_flag=True,
-                  help='Show all the Collins dictionary items')
+                  help='Show all the Collins dictionary items.')
     def cli(word, collins_count, all_collins_items):
         i = ICIBA()
         i.lookup(word)

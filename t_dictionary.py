@@ -12,6 +12,21 @@ class SimpleMeanings:
         self.meanings = meanings
 
 
+class CollinsMeaning:
+    def __init__(self, word_type, chinese_description, english_description):
+        self.word_type = word_type
+        self.chinese_description = chinese_description
+        self.english_description = english_description
+        self.examples = []
+
+
+class SingleCollinsExample:
+    def __init__(self, english_sentence, chinese_sentence, highlight_word):
+        self.english_sentence = english_sentence
+        self.chinese_sentence = chinese_sentence
+        self.highlight_word = highlight_word
+
+
 class Tense:
     def __init__(self, name, value):
         self.name = name
@@ -23,6 +38,7 @@ class Word:
         self.name = name
         self.pronunciations = []
         self.simple_meanings = []
+        self.collins_meanings = []
         self.tenses = []
 
 
@@ -36,6 +52,12 @@ class TDictionary:
 
     def query_and_parse(self, keyword):
         raise NotImplementedError("To be implemented by subclasses.")
+
+    @staticmethod
+    def coalesce(*items):
+        for item in items:
+            if item:
+                return item
 
     def simple_print(self):
         if not self.last_search_word:
@@ -76,7 +98,11 @@ class ICIBA(TDictionary):
         soup = BeautifulSoup(html, 'html.parser')
 
         # world
-        word_name = soup.select_one('h1.keyword').text.strip()
+        keyword_tag = soup.select_one('h1.keyword')
+        if not keyword_tag:
+            return None
+
+        word_name = keyword_tag.text.strip()
         word = Word(word_name)
 
         # pronunciations
@@ -100,7 +126,34 @@ class ICIBA(TDictionary):
             tense_value = tense_list_tag.select_one('a').text.strip()
             word.tenses.append(Tense(tense_name, tense_value))
 
+        self.parse_collins(soup, word)
+
         return word
+
+    @staticmethod
+    def parse_collins(soup, word):
+        collins_sections = soup.select('div.collins-section > div.no-order > div.prep-order')
+        for collins_section in collins_sections:
+            para = collins_section.select_one('p.size-chinese')
+            if not para:
+                break
+            word_type = para.select_one('span.family-english').text.strip()
+            chinese_desc = para.select_one('span.family-chinese').text.strip()
+            english_desc = para.select_one('span.prep-en').text.strip()
+            collins_meaning = CollinsMeaning(word_type, chinese_desc, english_desc)
+
+            examples = collins_section.select('div.text-sentence')
+            for example in examples:
+                english_sentence = example.select_one('p.family-english').text.strip()
+                chinese_sentence = example.select_one('p.family-chinese').text.strip()
+                try:
+                    highlight_word = example.select_one('p.family-english > span > b').text.strip()
+                except AttributeError:
+                    highlight_word = word.name
+                collins_meaning.examples.append(
+                    SingleCollinsExample(english_sentence, chinese_sentence, highlight_word))
+
+            word.collins_meanings.append(collins_meaning)
 
     def get_raw_html(self, keyword):
         r = requests.get(self.base_url + keyword, timeout=5, allow_redirects=False)
@@ -110,9 +163,8 @@ class ICIBA(TDictionary):
 
     def simple_print(self):
         TDictionary.simple_print(self)
-        if self.last_search_word:
-            print()
-            print('For more, please check on: ' + self.base_url + self.last_search_word.name, '')
+        print('\nFor more, please check on: ' +
+              self.base_url + (self.coalesce(self.last_search_word, Word(''))).name)
 
 
 if __name__ == '__main__':

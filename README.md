@@ -9,6 +9,7 @@ The dictionaries are web based, including the following so far,
 
 ### Installation
 The script is written in Python in a compatible way, so both the latest Python 2 and Python 3 should work.
+Python 2.7 and 3.6 have been tested.
 
 Download this repository, navigate to the directory and install the Python packages by running
 ```sh
